@@ -52,10 +52,9 @@ class Command implements yargs.CommandModule {
     ];
 
     if (constraints.length === 0) {
-      console.error(
-        `ERROR: Please specify providers or modules in "cdktf.json" config file`
+      console.warn(
+        `WARNING: No providers or modules found in "cdktf.json" config file, therefore cdktf get does nothing.`
       );
-      process.exit(1);
     }
 
     await renderInk(
