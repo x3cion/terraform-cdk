@@ -128,8 +128,19 @@ export class TestDriver {
     fse.writeFileSync(dest, content);
   };
 
+  setEnv = (key, value) => {
+    this.env[key] = value;
+  };
+
   stackDirectory = (stackName: string) => {
     return path.join(this.workingDirectory, "cdktf.out", "stacks", stackName);
+  };
+
+  manifest = () => {
+    return fs.readFileSync(
+      path.join(this.workingDirectory, "cdktf.out", "manifest.json"),
+      "utf8"
+    );
   };
 
   synthesizedStack = (stackName: string) => {
@@ -167,9 +178,22 @@ export class TestDriver {
     }).toString();
   };
 
-  deploy = (stackName?: string) => {
+  deploy = (stackName?: string, outputsFilePath?: string) => {
     return execSync(
-      `cdktf deploy ${stackName ? stackName : ""} --auto-approve`,
+      `cdktf deploy ${
+        stackName ? stackName : ""
+      } --auto-approve --outputs-file=${
+        outputsFilePath ? outputsFilePath : ""
+      }`,
+      { env: this.env }
+    ).toString();
+  };
+
+  output = (stackName?: string, outputsFilePath?: string) => {
+    return execSync(
+      `cdktf output ${stackName ? stackName : ""} --outputs-file=${
+        outputsFilePath ? outputsFilePath : ""
+      }`,
       { env: this.env }
     ).toString();
   };
@@ -252,6 +276,10 @@ export class TestDriver {
     } finally {
       await templateServer.stop();
     }
+  };
+
+  readLocalFile = (fileName: string): string => {
+    return fs.readFileSync(path.join(this.workingDirectory, fileName), "utf8");
   };
 }
 
