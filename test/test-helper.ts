@@ -185,7 +185,7 @@ export class TestDriver {
       } --auto-approve --outputs-file=${
         outputsFilePath ? outputsFilePath : ""
       }`,
-      { env: this.env }
+      { env: this.env, stdio: "inherit" }
     ).toString();
   };
 
