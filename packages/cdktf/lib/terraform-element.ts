@@ -46,16 +46,14 @@ export class TerraformElement extends Construct {
     return {};
   }
 
-  private _fqnToken?: string;
+  private _fqnRequested = false;
 
   public get fqn() {
-    if (!this._fqnToken) {
-      ok(!!this._elementType, "Element type not set");
-      this._fqnToken = Token.asString(
-        ref(`${this._elementType}.${this.friendlyUniqueId}`, this.cdktfStack)
-      );
-    }
-    return this._fqnToken;
+    ok(!!this._elementType, "Element type not set");
+    this._fqnRequested = true;
+    return Token.asString(
+      ref(`${this._elementType}.${this.friendlyUniqueId}`, this.cdktfStack)
+    );
   }
 
   private _friendlyUniqueId?: string;
@@ -77,7 +75,7 @@ export class TerraformElement extends Construct {
    */
   public overrideLogicalId(newLogicalId: string) {
     ok(
-      !this._fqnToken,
+      !this._fqnRequested,
       "Logical ID may not be overriden once .fqn has been requested"
     );
     this._logicalIdOverride = newLogicalId;
@@ -88,7 +86,7 @@ export class TerraformElement extends Construct {
    */
   public resetOverrideLogicalId() {
     ok(
-      !this._fqnToken,
+      !this._fqnRequested,
       "Logical ID may not be overriden once .fqn has been requested"
     );
     this._logicalIdOverride = undefined;
